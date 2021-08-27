@@ -16,10 +16,10 @@ fn t() {
     ];
     let mut n = 0;
     for i in 0..=100_000_000 - 2 {
-        if prime.get(i + 2) {
+        if prime.get(i) {
             n += 1;
         }
-        if let Some((_, n_primes)) = map.into_iter().find(|x| x.0 == i) {
+        if let Some((_, n_primes)) = map.into_iter().find(|x| x.0 == i + 2) {
             assert_eq!(n, *n_primes);
         }
     }
