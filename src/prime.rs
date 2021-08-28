@@ -1,24 +1,48 @@
 use crate::bool_vec::BoolVec;
 
+const SIZE: usize = 2_usize.pow(15);
+
 pub struct Prime {
-    data: BoolVec,
+    data: BoolVec<SIZE>,
+    len: usize,
 }
 
 impl Prime {
     pub fn new(size: usize) -> Self {
         Self {
-            data: BoolVec::new(size - 2),
+            data: BoolVec::new(size),
+            len: size,
         }
     }
 
     pub fn seive(&mut self) {
-        for i in 0..=(self.data.len() as f64 + 2.).sqrt().ceil() as usize {
-            if !self.data[i] {
+        let sqrt = (self.len as f64).sqrt().ceil() as usize;
+
+        for j in 2..=sqrt {
+            if !self.data[j] {
                 continue;
             }
 
-            for i in ((i + 2) * (i + 2) - 2..=self.data.len()).step_by(i + 2) {
-                self.data.set(i, false);
+            for k in (j * j..=sqrt).step_by(j) {
+                self.data.reset(k);
+            }
+        }
+
+        for block in (sqrt + 1..self.len).step_by(SIZE) {
+            let sqrt = f64::sqrt((block + SIZE).min(self.len) as f64).ceil() as usize;
+
+            for j in 2..=sqrt {
+                if !self.get(j) {
+                    continue;
+                }
+
+                let rem = block % j;
+
+                let start = if rem == 0 { 0 } else { j - rem };
+
+                for k in (start..SIZE.min(self.len - block)).step_by(j) {
+                    self.data.reset(block + k);
+                }
             }
         }
     }

@@ -35,8 +35,8 @@ fn main() {
         let mut primes = Prime::new(num);
         let mut num_primes = 0;
         primes.seive();
-        for i in (0..=num - 2).filter(|x| primes.get(*x)) {
-            print!("{}\n", i + 2);
+        for i in (2..=num - 2).filter(|x| primes.get(*x)) {
+            print!("{}\n", i);
             num_primes += 1
         }
 
