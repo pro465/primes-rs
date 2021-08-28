@@ -15,11 +15,11 @@ fn t() {
         (100_000_000, 5_761_455),
     ];
     let mut n = 0;
-    for i in 2..=100_000_000 {
+    for i in 2..100_000_000 {
         if prime.get(i) {
             n += 1;
         }
-        if let Some((_, n_primes)) = map.into_iter().find(|x| x.0 == i) {
+        if let Some((_, n_primes)) = map.into_iter().find(|x| x.0 == i + 1) {
             assert_eq!(n, *n_primes);
         }
     }
