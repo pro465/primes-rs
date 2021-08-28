@@ -11,10 +11,7 @@ fn main() {
         .expect("expected number");
 
     let second_arg = env::args().nth(2);
-    let second_arg = match second_arg {
-        Some(x) if x == "true" => true,
-        _ => false,
-    };
+    let second_arg = matches!(second_arg, Some(x) if x == "true");
 
     if second_arg {
         let mut sum = 0;
@@ -36,7 +33,7 @@ fn main() {
         let mut num_primes = 0;
         primes.seive();
         for i in (2..=num - 2).filter(|x| primes.get(*x)) {
-            print!("{}\n", i);
+            println!("{}", i);
             num_primes += 1
         }
 

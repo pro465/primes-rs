@@ -19,7 +19,7 @@ impl<const N: usize> BoolVec<N> {
     }
 
     pub fn reset(&mut self, idx: usize) {
-        self.data[idx / Self::BITS_PER_BLOCK][idx / 8 % N] &= !(1 << idx % 8);
+        self.data[idx / Self::BITS_PER_BLOCK][idx / 8 % N] &= !(1 << (idx % 8));
     }
 }
 
