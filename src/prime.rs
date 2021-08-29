@@ -33,8 +33,8 @@ impl Prime {
 
         let start = sqrt + 1;
 
-        for block in (start..=self.len).step_by(sqrt) {
-            let sqrt_block = f64::sqrt((block + sqrt).min(self.len) as f64).ceil() as usize;
+        for block in (start..=self.len).step_by(SIZE) {
+            let sqrt_block = f64::sqrt((block + SIZE).min(self.len) as f64).ceil() as usize;
 
             let mut j = 2;
 
@@ -49,7 +49,7 @@ impl Prime {
 
                 let start = (j - rem) * (rem != 0) as usize;
 
-                self.data.reset(block + start, j, sqrt);
+                self.data.reset::<SIZE>(block + start, j);
 
                 j += 1 + (j & 1);
             }

@@ -16,8 +16,8 @@ impl BoolVec {
     }
 
     #[inline(always)]
-    pub fn reset(&mut self, mut start: usize, step: usize, size: usize) {
-        let end = (start + size).min(self.len);
+    pub fn reset<const SIZE: usize>(&mut self, mut start: usize, step: usize) {
+        let end = (start + SIZE).min(self.len);
 
         while start < end {
             self.reset_bit(start);
