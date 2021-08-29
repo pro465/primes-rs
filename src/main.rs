@@ -6,11 +6,13 @@ use primes::Prime;
 fn main() {
     let num: usize = env::args()
         .nth(1)
-        .expect("expeected atleast 1 number as argument")
+        .expect("expected atleast 1 number as argument")
         .parse()
         .expect("expected number");
 
     let second_arg = env::args().nth(2);
+
+    let num = num + 1;
     let second_arg = matches!(second_arg, Some(x) if x == "true");
 
     if second_arg {
@@ -18,7 +20,7 @@ fn main() {
         for _ in 0..10 {
             let timer = Instant::now();
             let mut num_times = 0;
-            while (Instant::now() - timer).as_secs_f32() < 5. {
+            while (Instant::now() - timer).as_secs_f64() < 5. {
                 let mut primes = Prime::new(num);
                 primes.seive();
                 num_times += 1;
@@ -27,7 +29,7 @@ fn main() {
             sum += num_times;
         }
 
-        println!("avg: {}", sum / 10);
+        println!("avg: {}", sum as f32 / 10.);
     } else {
         let mut primes = Prime::new(num);
         let mut num_primes = 0;
