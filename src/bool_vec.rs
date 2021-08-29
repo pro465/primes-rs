@@ -2,24 +2,19 @@ use std::ops::Index;
 
 static BOOL: [bool; 2] = [false, true];
 
-pub struct BoolVec {
-    data: Vec<u8>,
-    len: usize,
+#[derive(Clone, Copy)]
+pub struct BoolVec<const N: usize> {
+    data: [u8; N],
 }
 
-impl BoolVec {
-    pub fn new(size: usize) -> Self {
-        Self {
-            data: vec![0xff; (size + 1) / 8 + ((size + 1) % 8 != 0) as usize],
-            len: size + 1,
-        }
+impl<const N: usize> BoolVec<N> {
+    pub fn new() -> Self {
+        Self { data: [0xff; N] }
     }
 
     #[inline(always)]
-    pub fn reset(&mut self, mut start: usize, step: usize, size: usize) {
-        let end = (start + size).min(self.len);
-
-        while start < end {
+    pub fn reset(&mut self, mut start: usize, step: usize) {
+        while start < N * 8 {
             self.reset_bit(start);
             start += step
         }
@@ -31,7 +26,7 @@ impl BoolVec {
     }
 }
 
-impl Index<usize> for BoolVec {
+impl<const N: usize> Index<usize> for BoolVec<N> {
     type Output = bool;
 
     #[inline(always)]
