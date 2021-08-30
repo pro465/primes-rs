@@ -1,6 +1,7 @@
 use crate::bool_vec::BoolVec;
 
 const SIZE: usize = 2_usize.pow(16);
+const BITS_PER_BLOCK: usize = 8 * SIZE;
 
 pub struct Prime {
     data: Vec<BoolVec<SIZE>>,
@@ -10,7 +11,7 @@ pub struct Prime {
 
 impl Prime {
     pub fn new(size: usize) -> Self {
-        let blocks = size / 8 / SIZE + (size / 8 % SIZE != 0) as usize;
+        let blocks = size / BITS_PER_BLOCK + (size % BITS_PER_BLOCK != 0) as usize;
 
         Self {
             data: vec![BoolVec::new(); blocks],
@@ -20,44 +21,54 @@ impl Prime {
     }
 
     pub fn seive(&mut self) {
-        let sqrt = (self.len as f64).sqrt();
+        let sqrt = (self.len as f64).sqrt().ceil() as usize;
 
-        let sqrt = sqrt.ceil() as usize;
+        let rem = sqrt % BITS_PER_BLOCK;
 
-        let modulo = sqrt % (SIZE * 8);
+        let sqrt = sqrt + (BITS_PER_BLOCK - rem) * (rem != 0) as usize;
 
-        let sqrt = sqrt + (SIZE * 8 - modulo) * (modulo != 0) as usize;
-
-        let fourth_root = (sqrt as f64).sqrt().ceil() as usize;
+        let fourth_root = f64::sqrt(sqrt as f64).ceil() as usize;
 
         for j in 2..=fourth_root {
             if !self.get(j) {
                 continue;
             }
 
-            for k in 0..=sqrt / 8 / SIZE {
-                self.data[k].reset(j * j % (8 * SIZE), j);
+            let sqrt_block = sqrt / BITS_PER_BLOCK;
+            let j_sq_block = j * j / BITS_PER_BLOCK;
+
+            for k in j_sq_block..sqrt_block {
+                let bit_idx = k * BITS_PER_BLOCK;
+                let rem = bit_idx + j;
+                let ceil = (bit_idx / j) + (rem != 0) as usize;
+
+                let start = j * ceil - bit_idx;
+
+                self.data[k].reset(start, j);
             }
         }
 
-        for block_idx in sqrt / 8 / SIZE + 1..self.blocks {
-            let sqrt_block =
-                f64::sqrt((block_idx * SIZE * 8 + SIZE).min(self.len) as f64).ceil() as usize;
+        for block_idx in sqrt / BITS_PER_BLOCK..self.blocks {
+            let bit_idx = block_idx * BITS_PER_BLOCK;
+
+            let sqrt = f64::sqrt((bit_idx + BITS_PER_BLOCK).min(self.len) as f64).ceil() as usize;
 
             let mut j = 2;
 
-            while j <= sqrt_block {
+            while j <= sqrt {
                 if !self.get(j) {
                     j += 2;
 
                     continue;
                 }
 
-                let rem = (block_idx * 8 * SIZE) % j;
+                let rem = bit_idx % j;
 
-                let start = (j - rem) * (rem != 0) as usize;
+                let ceil = (bit_idx / j) + (rem != 0) as usize;
 
-                self.data[block_idx].reset(start % (8 * SIZE), j);
+                let start = j * ceil - bit_idx;
+
+                self.data[block_idx].reset(start, j);
 
                 j += 1 + (j & 1);
             }
@@ -66,6 +77,6 @@ impl Prime {
 
     #[inline(always)]
     pub fn get(&self, idx: usize) -> bool {
-        self.data[idx / 8 / SIZE][idx % (8 * SIZE)]
+        self.data[idx / BITS_PER_BLOCK][idx % BITS_PER_BLOCK]
     }
 }
