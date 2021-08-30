@@ -35,12 +35,12 @@ impl Prime {
                 continue;
             }
 
-            for k in 0..sqrt / 8 / SIZE {
-                self.data[k].reset(j * j, j);
+            for k in 0..=sqrt / 8 / SIZE {
+                self.data[k].reset(j * j % (8 * SIZE), j);
             }
         }
 
-        for block_idx in (sqrt + 1) / 8 / SIZE..self.blocks {
+        for block_idx in sqrt / 8 / SIZE + 1..self.blocks {
             let sqrt_block =
                 f64::sqrt((block_idx * SIZE * 8 + SIZE).min(self.len) as f64).ceil() as usize;
 
@@ -57,7 +57,7 @@ impl Prime {
 
                 let start = (j - rem) * (rem != 0) as usize;
 
-                self.data[block_idx].reset(start, j);
+                self.data[block_idx].reset(start % (8 * SIZE), j);
 
                 j += 1 + (j & 1);
             }
