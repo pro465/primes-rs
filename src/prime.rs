@@ -67,7 +67,7 @@ impl Prime {
                 let ceil = (bit_idx / j) + (rem != 0) as usize;
 
                 let start = j * ceil - bit_idx;
-
+              
                 self.data[block_idx].reset(start, j);
 
                 j += 1 + (j & 1);
