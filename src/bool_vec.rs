@@ -13,7 +13,7 @@ impl<const N: usize> BoolVec<N> {
     }
 
     #[inline(always)]
-    pub fn reset(&mut self, mut start: usize, step: usize) {
+    ufn reset(&mut self, mut start: usize, step: usize) {
         while start < N * 8 {
             self.reset_bit(start);
             start += step
