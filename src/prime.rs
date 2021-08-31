@@ -25,32 +25,30 @@ impl Prime {
 
         let rem = sqrt % BITS_PER_BLOCK;
 
-        let sqrt = sqrt + (BITS_PER_BLOCK - rem) * (rem != 0) as usize;
+        let sqrt = sqrt + BITS_PER_BLOCK + (BITS_PER_BLOCK - rem) * (rem != 0) as usize;
 
         let fourth_root = f64::sqrt(sqrt as f64).ceil() as usize;
 
-        let sqrt = BITS_PER_BLOCK + sqrt;
+        let sqrt_block = sqrt / BITS_PER_BLOCK;
 
         for j in 2..=fourth_root {
             if !self.get(j) {
                 continue;
             }
 
-            let sqrt_block = sqrt / BITS_PER_BLOCK;
-            let j_sq_block = j * j / BITS_PER_BLOCK;
+            let mut k = j * j;
 
-            for k in j_sq_block..sqrt_block {
-                let bit_idx = k * BITS_PER_BLOCK;
-                let rem = bit_idx + j;
-                let ceil = (bit_idx / j) + (rem != 0) as usize;
+            while k < sqrt.min(self.len) {
+                let block_idx = k / BITS_PER_BLOCK;
+                let bit_idx = k % BITS_PER_BLOCK;
 
-                let start = j * ceil - bit_idx;
+                self.data[block_idx].reset_bit(bit_idx);
 
-                self.data[k].reset(start, j);
+                k += j;
             }
         }
 
-        for block_idx in sqrt / BITS_PER_BLOCK..self.blocks {
+        for block_idx in sqrt_block.min(self.blocks)..self.blocks {
             let bit_idx = block_idx * BITS_PER_BLOCK;
 
             let sqrt = f64::sqrt((bit_idx + BITS_PER_BLOCK).min(self.len) as f64).ceil() as usize;
