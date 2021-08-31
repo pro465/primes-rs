@@ -25,7 +25,7 @@ impl Prime {
 
         let rem = sqrt % BITS_PER_BLOCK;
 
-        let sqrt = sqrt + (BITS_PER_BLOCK - rem) * (rem != 0) as usize;
+        let sqrt = sqrt + BITS_PER_BLOCK + (BITS_PER_BLOCK - rem) * (rem != 0) as usize;
 
         let fourth_root = f64::sqrt(sqrt as f64).ceil() as usize;
 
