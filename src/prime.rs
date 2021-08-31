@@ -25,9 +25,11 @@ impl Prime {
 
         let rem = sqrt % BITS_PER_BLOCK;
 
-        let sqrt = sqrt + BITS_PER_BLOCK + (BITS_PER_BLOCK - rem) * (rem != 0) as usize;
+        let sqrt = sqrt + (BITS_PER_BLOCK - rem) * (rem != 0) as usize;
 
         let fourth_root = f64::sqrt(sqrt as f64).ceil() as usize;
+
+        let sqrt = BITS_PER_BLOCK + sqrt;
 
         for j in 2..=fourth_root {
             if !self.get(j) {
@@ -67,7 +69,7 @@ impl Prime {
                 let ceil = (bit_idx / j) + (rem != 0) as usize;
 
                 let start = j * ceil - bit_idx;
-              
+
                 self.data[block_idx].reset(start, j);
 
                 j += 1 + (j & 1);
