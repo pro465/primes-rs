@@ -38,15 +38,18 @@ impl Prime {
 
             while k < sqrt {
                 let block_idx = k / BITS_PER_BLOCK;
+
                 let start = k % BITS_PER_BLOCK;
 
-                self.data[block_idx].reset(start, j);
-
                 let next = BITS_PER_BLOCK * (block_idx + 1);
+
                 let rem = next % j;
+
                 let ceil = next / j + (rem != 0) as usize;
+
                 let jump = j * ceil;
 
+                self.data[block_idx].reset(start, j);
                 k = jump;
             }
         }
@@ -58,7 +61,17 @@ impl Prime {
 
             let sqrt = f64::sqrt((bit_idx + BITS_PER_BLOCK).min(self.len) as f64).ceil() as usize;
 
-            let mut j = 2;
+            if 2 <= sqrt {
+                let rem = bit_idx & 1;
+
+                let ceil = (bit_idx >> 1) + rem;
+
+                let start = (ceil << 1) - bit_idx;
+
+                self.data[block_idx].reset(start, 2);
+            }
+
+            let mut j = 3;
 
             while j <= sqrt {
                 if !self.get(j) {
@@ -75,7 +88,7 @@ impl Prime {
 
                 self.data[block_idx].reset(start, j);
 
-                j += 1 + (j & 1);
+                j += 2;
             }
         }
     }
